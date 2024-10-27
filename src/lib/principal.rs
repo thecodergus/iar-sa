@@ -66,8 +66,11 @@ pub fn simulated_annealing(
 
             if delta < 0.0 || aleatorio < probabilidade {
                 s = vizinho.clone();
+                println!("Solução vizinha aceita. Nova solução s: {:?}", s);
+
                 if fo_vizinho < funcao_objetivo(&sat, &melhor_solucao) {
                     melhor_solucao = s.clone();
+                    println!("Nova melhor solução encontrada: {:?}", melhor_solucao);
                 }
             }
 
