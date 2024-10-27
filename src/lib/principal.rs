@@ -54,28 +54,18 @@ pub fn simulated_annealing(
             let fo_s = funcao_objetivo(&sat, &s);
             let delta: f64 = fo_s_linha - fo_s;
 
-            // println!("Iteração {}: delta = {}", iter_t, delta);
-
             if delta < 0.0 {
                 s = s_linha.clone();
-                // println!("Solução melhor encontrada (delta < 0). Atualizando s.");
 
                 if fo_s_linha < funcao_objetivo(&sat, &s_asterisco) {
                     s_asterisco = s_linha.clone();
-                    // println!("Nova melhor solução s_asterisco encontrada.");
                 }
             } else {
                 let probabilidade = (-delta / temperatura).exp();
                 let rand_value = thread_rng().gen_range(0.0..=1.0);
-                // println!(
-                //     "Probabilidade de aceitação: {}, Valor aleatório: {}",
-                //     probabilidade,
-                //     rand_value
-                // );
 
                 if rand_value < probabilidade {
                     s = s_linha.clone();
-                    // println!("Solução pior aceita com probabilidade. Atualizando s.");
                 }
             }
 
@@ -86,7 +76,6 @@ pub fn simulated_annealing(
             });
         }
         temperatura *= alfa;
-        println!("Temperatura atualizada: {}", temperatura);
         iter_t = 0;
         println!("-------------------------------------");
     }
