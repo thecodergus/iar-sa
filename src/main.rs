@@ -14,7 +14,7 @@ fn main() -> io::Result<()> {
     let solucao_aleatoria: Vec<bool> = lib::vetores::random_bool_vector(20);
 
     let temperatura: f64 = 5.0;
-    let maximo_interacoes: usize = 10_000;
+    let maximo_interacoes: usize = 200_000;
     let alfa: f64 = 2.4;
 
     let (melhor, historico) = simulated_annealing(
