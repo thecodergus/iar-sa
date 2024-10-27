@@ -1,4 +1,4 @@
-use rand::Rng;
+use rand::{thread_rng, Rng};
 
 use super::vetores::{bitflip_random, change_for_boolean};
 
@@ -25,84 +25,40 @@ pub fn funcao_objetivo(sat: &Vec<Vec<i32>>, booleanos: &Vec<bool>) -> f64 {
 }
 
 pub fn simulated_annealing(
-    mut melhor_solucao: Vec<bool>,
+    mut s: Vec<bool>,
     sat: Vec<Vec<i32>>,
-    mut temperatura: f64,
+    temperatura_inicial: f64,
     alfa: f64,
     maximo_interacoes: usize,
     fn_temperatura: &dyn Fn(f64, f64, f64, f64) -> f64,
 ) -> (Vec<bool>, Vec<Output>) {
-    let mut s: Vec<bool> = melhor_solucao.clone();
-
+    let mut s_asterisco: Vec<bool> = s.clone();
+    let mut iter_t: usize = 0;
+    let mut temperatura: f64 = temperatura_inicial;
     let mut historico: Vec<Output> = vec![];
-    let mut contador: usize = 0;
 
-    println!("Iniciando Simulated Annealing:");
-    println!("Temperatura inicial: {}", temperatura);
-    println!("Melhor solução inicial: {:?}", melhor_solucao);
-    println!("--------------------------------------------");
+    while temperatura < 1e-4 {
+        while iter_t < maximo_interacoes {
+            iter_t += 1;
 
-    while temperatura > 1e-4 {
-        let mut iter: usize = 0;
+            let s_linha: Vec<bool> = bitflip_random(&s, 5e-2);
+            let delta: f64 = funcao_objetivo(&sat, &s_linha) - funcao_objetivo(&sat, &s);
 
-        println!(
-            "Iteração externa {}: Temperatura atual: {}",
-            contador, temperatura
-        );
+            if delta < 0.0 {
+                s = s_linha.clone();
 
-        while iter < maximo_interacoes {
-            let vizinho: Vec<bool> = bitflip_random(&s, 5e-2);
-            let fo_vizinho = funcao_objetivo(&sat, &vizinho);
-            let fo_s = funcao_objetivo(&sat, &s);
-            let delta: f64 = fo_vizinho - fo_s;
-
-            let probabilidade: f64 = (-delta / temperatura).exp();
-            let aleatorio: f64 = rand::thread_rng().gen::<f64>();
-
-            println!(
-                "Iteração interna {}: delta = {}, probabilidade = {}, aleatório = {}",
-                iter, delta, probabilidade, aleatorio
-            );
-
-            if delta < 0.0 || aleatorio < probabilidade {
-                s = vizinho.clone();
-
-                if fo_vizinho < funcao_objetivo(&sat, &melhor_solucao) {
-                    melhor_solucao = s.clone();
+                if funcao_objetivo(&sat, &s_linha) < funcao_objetivo(&sat, &s) {
+                    s_asterisco = s_linha;
+                }
+            } else {
+                if thread_rng().gen_range(0.0..=1.0) < (-delta / temperatura).exp() {
+                    s = s_linha;
                 }
             }
-
-            iter += 1;
         }
-
-        let melhor_fo = funcao_objetivo(&sat, &melhor_solucao);
-        let s_fo = funcao_objetivo(&sat, &s);
-        temperatura = fn_temperatura(temperatura, alfa, melhor_fo, s_fo);
-
-        println!(
-            "Atualização da temperatura: nova temperatura = {}",
-            temperatura
-        );
-
-        let clausulas_verdadeiras: usize = melhor_solucao.iter().filter(|v| **v).count();
-
-        println!(
-            "Cláusulas verdadeiras na melhor solução atual: {}",
-            clausulas_verdadeiras
-        );
-
-        historico.push(Output {
-            temperatura,
-            interacao: contador,
-            clausulas_verdadeiras,
-        });
-        contador += 1;
-
-        println!("--------------------------------------------");
+        temperatura *= alfa;
+        iter_t = 0;
     }
 
-    println!("Simulated Annealing concluído.");
-    println!("Melhor solução encontrada: {:?}", melhor_solucao);
-
-    return (melhor_solucao, historico);
+    return (s_asterisco, historico);
 }
