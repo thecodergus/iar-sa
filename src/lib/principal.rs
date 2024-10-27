@@ -6,6 +6,7 @@ use super::vetores::{bitflip_random, change_for_boolean};
 pub struct Output {
     pub temperatura: f64,
     pub interacao: usize,
+    pub clausulas_verdadeiras: usize,
 }
 
 pub fn funcao_objetivo(sat: &Vec<Vec<i32>>, booleanos: &Vec<bool>) -> f64 {
@@ -58,6 +59,11 @@ pub fn simulated_annealing(
         historico.push(Output {
             temperatura: temperatura.clone(),
             interacao: contador.clone(),
+            clausulas_verdadeiras: melhor_solucao
+                .iter()
+                .filter(|v| **v)
+                .collect::<Vec<&bool>>()
+                .len(),
         });
         contador += 1;
     }
