@@ -38,23 +38,43 @@ pub fn simulated_annealing(
     let mut temperatura: f64 = temperatura_inicial;
     let mut historico: Vec<Output> = vec![];
 
+    println!("Iniciando Simulated Annealing");
+    println!("Temperatura inicial: {}", temperatura);
+    println!("Solução inicial s: {:?}", s);
+    println!("-------------------------------------");
+
     while temperatura > 1e-4 {
+        println!("Temperatura atual: {}", temperatura);
         while iter_t < maximo_interacoes {
             iter_t += 1;
             contador += 1;
 
             let s_linha: Vec<bool> = bitflip_random(&s, 5e-2);
-            let delta: f64 = funcao_objetivo(&sat, &s_linha) - funcao_objetivo(&sat, &s);
+            let fo_s_linha = funcao_objetivo(&sat, &s_linha);
+            let fo_s = funcao_objetivo(&sat, &s);
+            let delta: f64 = fo_s_linha - fo_s;
+
+            println!("Iteração {}: delta = {}", contador, delta);
 
             if delta < 0.0 {
                 s = s_linha.clone();
+                println!("Solução melhor encontrada (delta < 0). Atualizando s.");
 
-                if funcao_objetivo(&sat, &s_linha) < funcao_objetivo(&sat, &s) {
-                    s_asterisco = s_linha;
+                if fo_s_linha < funcao_objetivo(&sat, &s_asterisco) {
+                    s_asterisco = s_linha.clone();
+                    println!("Nova melhor solução s_asterisco encontrada.");
                 }
             } else {
-                if thread_rng().gen_range(0.0..=1.0) < (-delta / temperatura).exp() {
-                    s = s_linha;
+                let probabilidade = (-delta / temperatura).exp();
+                let rand_value = thread_rng().gen_range(0.0..=1.0);
+                println!(
+                    "Probabilidade de aceitação: {}, Valor aleatório: {}",
+                    probabilidade, rand_value
+                );
+
+                if rand_value < probabilidade {
+                    s = s_linha.clone();
+                    println!("Solução pior aceita com probabilidade. Atualizando s.");
                 }
             }
 
@@ -65,8 +85,13 @@ pub fn simulated_annealing(
             });
         }
         temperatura *= alfa;
+        println!("Temperatura atualizada: {}", temperatura);
         iter_t = 0;
+        println!("-------------------------------------");
     }
+
+    println!("Simulated Annealing concluído.");
+    println!("Melhor solução encontrada s_asterisco: {:?}", s_asterisco);
 
     return (s_asterisco, historico);
 }
