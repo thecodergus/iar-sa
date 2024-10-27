@@ -2,6 +2,7 @@ use std::fs::File;
 use std::io::{self, BufRead};
 use std::path::Path;
 
+use lib::cooling_schedule::um;
 use lib::principal::simulated_annealing;
 
 mod lib;
@@ -22,6 +23,7 @@ fn main() -> io::Result<()> {
         temperatura,
         alfa,
         maximo_interacoes,
+        &um,
     );
 
     println!("{:?}", historico);

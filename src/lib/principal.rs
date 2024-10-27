@@ -30,6 +30,7 @@ pub fn simulated_annealing(
     mut temperatura: f64,
     alfa: f64,
     maximo_interacoes: usize,
+    fn_temperatura: &dyn Fn(f64, f64, f64, f64) -> f64,
 ) -> (Vec<bool>, Vec<Output>) {
     let mut s: Vec<bool> = melhor_solucao.clone();
 
@@ -40,30 +41,35 @@ pub fn simulated_annealing(
         let mut iter: usize = 0;
 
         while iter < maximo_interacoes {
-            iter += 1;
-
             let vizinho: Vec<bool> = bitflip_random(&s, 5e-2);
-            let delta: f64 = funcao_objetivo(&sat, &vizinho) - funcao_objetivo(&sat, &s);
+            let fo_vizinho = funcao_objetivo(&sat, &vizinho);
+            let fo_s = funcao_objetivo(&sat, &s);
+            let delta: f64 = fo_vizinho - fo_s;
 
             if delta < 0.0 || rand::thread_rng().gen::<f64>() < (-delta / temperatura).exp() {
                 s = vizinho;
-
-                if funcao_objetivo(&sat, &s) < funcao_objetivo(&sat, &melhor_solucao) {
+                if fo_vizinho < funcao_objetivo(&sat, &melhor_solucao) {
                     melhor_solucao = s.clone();
                 }
             }
+
+            iter += 1;
         }
 
-        temperatura *= alfa;
+        let melhor_fo = funcao_objetivo(&sat, &melhor_solucao);
+        let s_fo = funcao_objetivo(&sat, &s);
+        temperatura = fn_temperatura(temperatura, alfa, melhor_fo, s_fo);
+
+        let clausulas_verdadeiras: usize = melhor_solucao
+            .iter()
+            .filter(|v| **v)
+            .collect::<Vec<&bool>>()
+            .len();
 
         historico.push(Output {
-            temperatura: temperatura.clone(),
-            interacao: contador.clone(),
-            clausulas_verdadeiras: melhor_solucao
-                .iter()
-                .filter(|v| **v)
-                .collect::<Vec<&bool>>()
-                .len(),
+            temperatura,
+            interacao: contador,
+            clausulas_verdadeiras,
         });
         contador += 1;
     }
