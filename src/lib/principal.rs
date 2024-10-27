@@ -54,7 +54,7 @@ pub fn simulated_annealing(
             let fo_s = funcao_objetivo(&sat, &s);
             let delta: f64 = fo_s_linha - fo_s;
 
-            println!("Iteração {}: delta = {}", contador, delta);
+            println!("Iteração {}: delta = {}", iter_t, delta);
 
             if delta < 0.0 {
                 s = s_linha.clone();
