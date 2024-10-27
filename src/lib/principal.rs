@@ -1,7 +1,11 @@
 use rand::Rng;
 
 use super::vetores::{bitflip_random, change_for_boolean};
-use std::f64::consts::E;
+
+pub struct Output {
+    pub temperatura: f64,
+    pub interacao: usize,
+}
 
 pub fn funcao_objetivo(sat: &Vec<Vec<usize>>, booleanos: &Vec<bool>) -> f64 {
     let sat_booleano: Vec<bool> = change_for_boolean(sat, booleanos)
@@ -24,8 +28,12 @@ pub fn simulated_annealing(
     mut temperatura: f64,
     alfa: f64,
     maximo_interacoes: usize,
-) -> Vec<bool> {
+) -> (Vec<bool>, Vec<Output>) {
     let mut s: Vec<bool> = melhor_solucao.clone();
+
+    let mut historico: Vec<Output> = vec![];
+    let mut contador: usize = 0;
+
     while temperatura > 1e-4 {
         let mut iter: usize = 0;
 
@@ -45,7 +53,13 @@ pub fn simulated_annealing(
         }
 
         temperatura *= alfa;
+
+        historico.push(Output {
+            temperatura: temperatura.clone(),
+            interacao: contador.clone(),
+        });
+        contador += 1;
     }
 
-    return melhor_solucao;
+    return (melhor_solucao, historico);
 }
