@@ -38,11 +38,11 @@ pub fn change_for_boolean(values: &Vec<Vec<usize>>, booleans: &Vec<bool>) -> Vec
                 .map(|value| {
                     if *value > 0 {
                         *booleans
-                            .get(*value)
+                            .get(*value - 1)
                             .expect("Erro ao buscar o valor booleano")
                     } else {
                         !booleans
-                            .get(*value)
+                            .get(*value - 1)
                             .expect("Erro ao buscar o valor booleano")
                     }
                 })
