@@ -37,8 +37,18 @@ pub fn simulated_annealing(
     let mut historico: Vec<Output> = vec![];
     let mut contador: usize = 0;
 
+    println!("Iniciando Simulated Annealing:");
+    println!("Temperatura inicial: {}", temperatura);
+    println!("Melhor solução inicial: {:?}", melhor_solucao);
+    println!("--------------------------------------------");
+
     while temperatura > 1e-4 {
         let mut iter: usize = 0;
+
+        println!(
+            "Iteração externa {}: Temperatura atual: {}",
+            contador, temperatura
+        );
 
         while iter < maximo_interacoes {
             let vizinho: Vec<bool> = bitflip_random(&s, 5e-2);
@@ -46,10 +56,21 @@ pub fn simulated_annealing(
             let fo_s = funcao_objetivo(&sat, &s);
             let delta: f64 = fo_vizinho - fo_s;
 
-            if delta < 0.0 || rand::thread_rng().gen::<f64>() < (-delta / temperatura).exp() {
-                s = vizinho;
+            let probabilidade: f64 = (-delta / temperatura).exp();
+            let aleatorio: f64 = rand::thread_rng().gen::<f64>();
+
+            println!(
+                "Iteração interna {}: delta = {}, probabilidade = {}, aleatório = {}",
+                iter, delta, probabilidade, aleatorio
+            );
+
+            if delta < 0.0 || aleatorio < probabilidade {
+                s = vizinho.clone();
+                println!("Solução vizinha aceita. Nova solução s: {:?}", s);
+
                 if fo_vizinho < funcao_objetivo(&sat, &melhor_solucao) {
                     melhor_solucao = s.clone();
+                    println!("Nova melhor solução encontrada: {:?}", melhor_solucao);
                 }
             }
 
@@ -60,11 +81,17 @@ pub fn simulated_annealing(
         let s_fo = funcao_objetivo(&sat, &s);
         temperatura = fn_temperatura(temperatura, alfa, melhor_fo, s_fo);
 
-        let clausulas_verdadeiras: usize = melhor_solucao
-            .iter()
-            .filter(|v| **v)
-            .collect::<Vec<&bool>>()
-            .len();
+        println!(
+            "Atualização da temperatura: nova temperatura = {}",
+            temperatura
+        );
+
+        let clausulas_verdadeiras: usize = melhor_solucao.iter().filter(|v| **v).count();
+
+        println!(
+            "Cláusulas verdadeiras na melhor solução atual: {}",
+            clausulas_verdadeiras
+        );
 
         historico.push(Output {
             temperatura,
@@ -72,7 +99,12 @@ pub fn simulated_annealing(
             clausulas_verdadeiras,
         });
         contador += 1;
+
+        println!("--------------------------------------------");
     }
+
+    println!("Simulated Annealing concluído.");
+    println!("Melhor solução encontrada: {:?}", melhor_solucao);
 
     return (melhor_solucao, historico);
 }
