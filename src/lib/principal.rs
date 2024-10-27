@@ -38,7 +38,7 @@ pub fn simulated_annealing(
     let mut temperatura: f64 = temperatura_inicial;
     let mut historico: Vec<Output> = vec![];
 
-    while temperatura < 1e-4 {
+    while temperatura > 1e-4 {
         while iter_t < maximo_interacoes {
             iter_t += 1;
             contador += 1;
