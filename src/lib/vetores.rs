@@ -7,6 +7,11 @@ pub fn generate_random_vector(n: usize) -> Vec<i32> {
     (0..n).map(|_| rng.gen_range(-100..=100)).collect()
 }
 
+pub fn random_bool_vector(n: usize) -> Vec<bool> {
+    let mut rng = rand::thread_rng();
+    (0..n).map(|_| rng.gen()).collect()
+}
+
 pub fn bitflip_random(vec: &Vec<bool>, percentage: f64) -> Vec<bool> {
     if percentage <= 0.0 || percentage > 100.0 {
         println!("Porcentagem inválida. Deve estar entre 0 e 100.");
@@ -34,7 +39,7 @@ pub fn bitflip_random(vec: &Vec<bool>, percentage: f64) -> Vec<bool> {
     new_vec // Retorna o novo vetor com os bits alterados
 }
 
-pub fn change_for_boolean(values: &Vec<Vec<usize>>, booleans: &Vec<bool>) -> Vec<Vec<bool>> {
+pub fn change_for_boolean(values: &Vec<Vec<i32>>, booleans: &Vec<bool>) -> Vec<Vec<bool>> {
     values
         .iter()
         .map(|vector| {
@@ -43,11 +48,11 @@ pub fn change_for_boolean(values: &Vec<Vec<usize>>, booleans: &Vec<bool>) -> Vec
                 .map(|value| {
                     if *value > 0 {
                         *booleans
-                            .get(*value - 1)
+                            .get((*value).abs() as usize - 1)
                             .expect("Erro ao buscar o valor booleano")
                     } else {
                         !booleans
-                            .get(*value - 1)
+                            .get((*value).abs() as usize - 1)
                             .expect("Erro ao buscar o valor booleano")
                     }
                 })

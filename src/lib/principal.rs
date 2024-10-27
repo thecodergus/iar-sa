@@ -2,12 +2,13 @@ use rand::Rng;
 
 use super::vetores::{bitflip_random, change_for_boolean};
 
+#[derive(Debug, Clone)]
 pub struct Output {
     pub temperatura: f64,
     pub interacao: usize,
 }
 
-pub fn funcao_objetivo(sat: &Vec<Vec<usize>>, booleanos: &Vec<bool>) -> f64 {
+pub fn funcao_objetivo(sat: &Vec<Vec<i32>>, booleanos: &Vec<bool>) -> f64 {
     let sat_booleano: Vec<bool> = change_for_boolean(sat, booleanos)
         .iter()
         .map(|vector| vector.iter().any(|&i| i))
@@ -24,7 +25,7 @@ pub fn funcao_objetivo(sat: &Vec<Vec<usize>>, booleanos: &Vec<bool>) -> f64 {
 
 pub fn simulated_annealing(
     mut melhor_solucao: Vec<bool>,
-    sat: Vec<Vec<usize>>,
+    sat: Vec<Vec<i32>>,
     mut temperatura: f64,
     alfa: f64,
     maximo_interacoes: usize,
@@ -40,7 +41,7 @@ pub fn simulated_annealing(
         while iter < maximo_interacoes {
             iter += 1;
 
-            let vizinho: Vec<bool> = bitflip_random(&s, 0.15);
+            let vizinho: Vec<bool> = bitflip_random(&s, 5e-2);
             let delta: f64 = funcao_objetivo(&sat, &vizinho) - funcao_objetivo(&sat, &s);
 
             if delta < 0.0 || rand::thread_rng().gen::<f64>() < (-delta / temperatura).exp() {
