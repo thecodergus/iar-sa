@@ -28,3 +28,25 @@ pub fn bitflip_random(vec: &mut Vec<bool>, percentage: f64) {
         vec[index] = !vec[index]; // Realiza o bit-flip no índice selecionado
     }
 }
+
+pub fn change_for_boolean(values: &Vec<Vec<usize>>, booleans: &Vec<bool>) -> Vec<Vec<bool>> {
+    values
+        .iter()
+        .map(|vector| {
+            vector
+                .iter()
+                .map(|value| {
+                    if *value > 0 {
+                        *booleans
+                            .get(*value)
+                            .expect("Erro ao buscar o valor booleano")
+                    } else {
+                        !booleans
+                            .get(*value)
+                            .expect("Erro ao buscar o valor booleano")
+                    }
+                })
+                .collect::<Vec<bool>>()
+        })
+        .collect()
+}
