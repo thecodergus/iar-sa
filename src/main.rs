@@ -2,6 +2,7 @@ use std::fs::File;
 use std::io::{self, BufRead};
 use std::path::Path;
 
+use lib::arquivo::gerar_grafico_convergencia;
 use lib::cooling_schedule::um;
 use lib::principal::simulated_annealing;
 
@@ -15,7 +16,7 @@ fn main() -> io::Result<()> {
 
     let temperatura: f64 = 1000.0;
     let alfa: f64 = 0.95;
-    let maximo_interacoes: usize = 10_000;
+    let maximo_interacoes: usize = 200_000;
 
     let (melhor, historico) = simulated_annealing(
         solucao_aleatoria,
@@ -26,8 +27,15 @@ fn main() -> io::Result<()> {
         &um,
     );
 
-    println!("{:?}", historico);
-    println!("{:?}", melhor);
+    // println!("{:?}", historico);
+    // println!("{:?}", melhor);
+
+    // Gerar o gráfico de convergência
+    if let Err(e) = gerar_grafico_convergencia(historico, "convergencia.png") {
+        println!("Erro ao gerar o gráfico: {}", e);
+    } else {
+        println!("Gráfico de convergência gerado com sucesso.");
+    }
 
     Ok(())
 }
