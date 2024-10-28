@@ -43,10 +43,11 @@ pub fn simulated_annealing(
     let mut melhor_estado: Vec<bool> = estado.clone();
     let mut melhor_energia: f64 = energia;
     let mut rng: rand::prelude::ThreadRng = thread_rng();
+    let mut contador: usize = 0;
 
     historico.push(Output {
         fo: energia,
-        interacao: 0,
+        interacao: contador,
         temperatura,
         trues: somar_trues(&sat, &melhor_estado),
     });
@@ -74,25 +75,25 @@ pub fn simulated_annealing(
                 melhor_estado = estado.clone();
                 melhor_energia = energia;
             }
-
-            // temperatura = fn_temperatura(temperatura, de, alfa, interacao);
-            temperatura *= alfa;
-
-            historico.push(Output {
-                fo: energia,
-                interacao,
-                temperatura,
-                trues: somar_trues(&sat, &melhor_estado),
-            });
-
-            println!(
-                "Iteração: {} | Temperatura: {:.4} | Energia: {:.4} | Trues: {}",
-                interacao,
-                temperatura,
-                energia,
-                somar_trues(&sat, &melhor_estado)
-            );
         }
+        // temperatura = fn_temperatura(temperatura, de, alfa, interacao);
+        temperatura *= alfa;
+        contador += 1;
+
+        historico.push(Output {
+            fo: energia,
+            interacao: contador,
+            temperatura,
+            trues: somar_trues(&sat, &melhor_estado),
+        });
+
+        println!(
+            "Iteração: {} | Temperatura: {:.4} | Energia: {:.4} | Trues: {}",
+            contador,
+            temperatura,
+            energia,
+            somar_trues(&sat, &melhor_estado)
+        );
     }
 
     (melhor_estado, historico)
