@@ -74,7 +74,8 @@ pub fn simulated_annealing(
                 }
             }
         }
-        temperatura = cooling_schedule::seis(iter_t as f64, 10.0, 0.001, 5000.0);
+        // temperatura = cooling_schedule::sete(iter_t as f64, 10.0, 0.001, 5000.0);
+        temperatura *= alfa;
         println!("Nova temperatura: {}", temperatura);
         iter_t = 0;
         historico.push(Output {
