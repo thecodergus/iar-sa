@@ -19,12 +19,13 @@ pub fn funcao_objetivo(sat: &Vec<Vec<i32>>, booleanos: &Vec<bool>) -> f64 {
         .map(|vector| vector.iter().any(|&i| i))
         .collect::<Vec<bool>>();
 
-    return sat_booleano
-        .iter()
-        .filter(|v| **v)
-        .collect::<Vec<&bool>>()
-        .len() as f64
-        / sat_booleano.len() as f64;
+    return 1.0
+        - (sat_booleano
+            .iter()
+            .filter(|v| **v)
+            .collect::<Vec<&bool>>()
+            .len() as f64
+            / sat_booleano.len() as f64);
 }
 
 pub fn simulated_annealing(
