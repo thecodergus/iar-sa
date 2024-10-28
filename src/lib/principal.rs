@@ -74,7 +74,6 @@ pub fn simulated_annealing(
             }
         }
         temperatura *= alfa;
-        iter_t = 0;
         historico.push(Output {
             interacao: contador,
             fo: funcao_objetivo(&sat, &s_asterisco),
@@ -86,6 +85,11 @@ pub fn simulated_annealing(
                 .len(),
         });
         println!("-------------------------------------");
+        if iter_t >= maximo_interacoes {
+            break;
+        } else {
+            iter_t = 0;
+        }
     }
 
     println!("Simulated Annealing concluído.");
