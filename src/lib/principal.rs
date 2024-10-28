@@ -37,12 +37,12 @@ pub fn simulated_annealing(
     fn_temperatura: &dyn Fn(f64, f64, f64, f64) -> f64,
 ) -> (Vec<bool>, Vec<Output>) {
     let mut historico: Vec<Output> = Vec::new();
-    let mut estado = estado_inicial;
-    let mut energia = funcao_objetivo(&sat, &estado);
-    let mut temperatura = temperatura_inicial;
-    let mut melhor_estado = estado.clone();
-    let mut melhor_energia = energia;
-    let mut rng = thread_rng();
+    let mut estado: Vec<bool> = estado_inicial;
+    let mut energia: f64 = funcao_objetivo(&sat, &estado);
+    let mut temperatura: f64 = temperatura_inicial;
+    let mut melhor_estado: Vec<bool> = estado.clone();
+    let mut melhor_energia: f64 = energia;
+    let mut rng: rand::prelude::ThreadRng = thread_rng();
 
     historico.push(Output {
         fo: energia,
@@ -60,9 +60,9 @@ pub fn simulated_annealing(
     );
 
     for interacao in 1..=maximo_interacoes {
-        let proximo_estado = bit_flip_with_probability(&estado, 0.05);
-        let nova_energia = funcao_objetivo(&sat, &proximo_estado);
-        let de = nova_energia - energia;
+        let proximo_estado: Vec<bool> = bit_flip_with_probability(&estado, 0.05);
+        let nova_energia: f64 = funcao_objetivo(&sat, &proximo_estado);
+        let de: f64 = nova_energia - energia;
 
         if de < 0.0 || rng.gen::<f64>() <= (-de / temperatura).exp() {
             estado = proximo_estado;
