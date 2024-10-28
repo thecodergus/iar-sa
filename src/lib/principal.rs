@@ -7,6 +7,7 @@ pub struct Output {
     pub temperatura: f64,
     pub interacao: usize,
     pub fo: f64,
+    pub trues: usize,
 }
 
 pub fn funcao_objetivo(sat: &Vec<Vec<i32>>, booleanos: &Vec<bool>) -> f64 {
@@ -78,6 +79,11 @@ pub fn simulated_annealing(
             interacao: contador,
             fo: funcao_objetivo(&sat, &s_asterisco),
             temperatura,
+            trues: s_asterisco
+                .iter()
+                .filter(|v| **v)
+                .collect::<Vec<&bool>>()
+                .len(),
         });
         println!("-------------------------------------");
     }

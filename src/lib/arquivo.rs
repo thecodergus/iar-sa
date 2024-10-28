@@ -37,6 +37,8 @@ pub fn gerar_grafico_convergencia(
     dados: Vec<Output>,
     caminho_arquivo: &str,
 ) -> Result<(), Box<dyn std::error::Error>> {
+    use plotters::prelude::*;
+
     // Determinar o tamanho da imagem
     let largura = 800;
     let altura = 600;
@@ -50,30 +52,33 @@ pub fn gerar_grafico_convergencia(
 
     // Encontrar os valores máximos e mínimos para os eixos
     let max_iteracao = dados.iter().map(|d| d.interacao).max().unwrap_or(0);
-    let min_fo = dados.iter().map(|d| d.fo).fold(f64::INFINITY, f64::min);
-    let max_fo = dados.iter().map(|d| d.fo).fold(f64::NEG_INFINITY, f64::max);
+    let min_trues = dados.iter().map(|d| d.trues).min().unwrap_or(0);
+    let max_trues = dados.iter().map(|d| d.trues).max().unwrap_or(1); // Evitar divisão por zero
 
     // Configurar o gráfico
     let mut chart = ChartBuilder::on(&root)
         .caption("Convergência do Simulated Annealing", ("sans-serif", 30))
         .x_label_area_size(40)
         .y_label_area_size(50)
-        .build_cartesian_2d(0usize..max_iteracao, min_fo..max_fo)?;
+        .build_cartesian_2d(0usize..max_iteracao, min_trues as f64..max_trues as f64)?;
 
     // Desenhar malhas de fundo
     chart
         .configure_mesh()
         .x_desc("Iterações")
-        .y_desc("Valor da Função Objetivo")
+        .y_desc("Número de Trues")
         .draw()?;
 
     // Preparar os dados para o gráfico
-    let pontos: Vec<(usize, f64)> = dados.iter().map(|d| (d.interacao, d.fo)).collect();
+    let pontos: Vec<(usize, f64)> = dados
+        .iter()
+        .map(|d| (d.interacao, d.trues as f64))
+        .collect();
 
     // Desenhar a linha de convergência
     chart
         .draw_series(LineSeries::new(pontos, &RED))?
-        .label("FO por Iteração")
+        .label("Trues por Iteração")
         .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], &RED));
 
     // Desenhar a legenda
