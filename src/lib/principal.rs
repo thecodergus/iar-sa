@@ -1,6 +1,6 @@
 use rand::{thread_rng, Rng};
 
-use super::vetores::{bitflip_random, change_for_boolean};
+use super::vetores::{bit_flip_with_probability, change_for_boolean};
 
 #[derive(Debug, Clone)]
 pub struct Output {
@@ -15,7 +15,7 @@ pub fn funcao_objetivo(sat: &Vec<Vec<i32>>, booleanos: &Vec<bool>) -> f64 {
         .map(|vector| vector.iter().any(|&i| i))
         .collect::<Vec<bool>>();
 
-    return sat_booleano
+    return 1 - sat_booleano
         .iter()
         .filter(|v| **v)
         .collect::<Vec<&bool>>()
@@ -52,7 +52,7 @@ pub fn simulated_annealing(
         while iter_t < maximo_interacoes {
             iter_t += 1;
 
-            let s_linha: Vec<bool> = bitflip_random(&s, 5e-2);
+            let s_linha: Vec<bool> = bit_flip_with_probability(&s, 5e-2);
             let fo_s_linha = funcao_objetivo(&sat, &s_linha);
             let fo_s = funcao_objetivo(&sat, &s);
             let delta: f64 = fo_s_linha - fo_s;

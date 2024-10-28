@@ -12,31 +12,20 @@ pub fn random_bool_vector(n: usize) -> Vec<bool> {
     (0..n).map(|_| rng.gen()).collect()
 }
 
-pub fn bitflip_random(vec: &Vec<bool>, percentage: f64) -> Vec<bool> {
-    if percentage <= 0.0 || percentage > 100.0 {
-        println!("Porcentagem inválida. Deve estar entre 0 e 100.");
-        return vec.clone(); // Retorna o vetor original se a porcentagem for inválida.
-    }
+pub fn bit_flip_with_probability(vetor: &Vec<bool>, p: f64) -> Vec<bool> {
+    let mut rng: rand::prelude::ThreadRng = rand::thread_rng();
 
-    let len: usize = vec.len();
-    let flip_count: usize = ((percentage / 100.0) * len as f64).round() as usize;
-
-    if flip_count == 0 {
-        return vec.clone(); // Se o número de flips calculado for 0, retorna o vetor original.
-    }
-
-    // Cria uma cópia do vetor para modificá-lo sem afetar o original
-    let mut new_vec: Vec<bool> = vec.clone();
-
-    // Seleciona índices aleatórios para modificar
-    let mut rng: rand::prelude::ThreadRng = thread_rng();
-    let indices_to_flip: rand::seq::index::IndexVec = sample(&mut rng, len, flip_count);
-
-    for index in indices_to_flip.iter() {
-        new_vec[index] = !new_vec[index]; // Realiza o bit-flip no índice selecionado
-    }
-
-    new_vec // Retorna o novo vetor com os bits alterados
+    vetor
+        .iter()
+        .map(|&bit| {
+            // Gera um número aleatório entre 0.0 e 1.0 e inverte o bit se for menor que `p`
+            if rng.gen::<f64>() < p {
+                !bit
+            } else {
+                bit
+            }
+        })
+        .collect()
 }
 
 pub fn change_for_boolean(values: &Vec<Vec<i32>>, booleans: &Vec<bool>) -> Vec<Vec<bool>> {
