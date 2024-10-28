@@ -89,7 +89,7 @@ pub fn simulated_annealing(
         });
 
         println!(
-            "Iteração: {} | Temperatura: {:.6} | Energia: {:.6} | Trues: {}",
+            "Iteração: {} | Temperatura: {:.4} | Energia: {:.4} | Trues: {}",
             contador,
             temperatura,
             energia,
