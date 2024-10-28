@@ -9,10 +9,10 @@ use lib::principal::simulated_annealing;
 mod lib;
 
 fn main() -> io::Result<()> {
-    let path = "uf20-01.cnf"; // Substitua pelo caminho do seu arquivo
+    let path = "uf100-01.cnf"; // Substitua pelo caminho do seu arquivo
     let clauses = lib::arquivo::parse_cnf_file(path)?;
 
-    let solucao_aleatoria: Vec<bool> = lib::vetores::random_bool_vector(20);
+    let solucao_aleatoria: Vec<bool> = lib::vetores::random_bool_vector(100);
 
     let temperatura: f64 = 1000.0;
     let alfa: f64 = 0.95;

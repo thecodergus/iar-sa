@@ -44,7 +44,11 @@ pub fn simulated_annealing(
     println!("-------------------------------------");
 
     while temperatura > 1e-4 {
-        println!("Temperatura atual: {}", temperatura);
+        println!(
+            "Temperatura atual: {} | FO: {}",
+            temperatura,
+            funcao_objetivo(&sat, &s_asterisco)
+        );
         contador += 1;
         while iter_t < maximo_interacoes {
             iter_t += 1;
