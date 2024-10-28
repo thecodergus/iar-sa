@@ -45,9 +45,9 @@ pub fn simulated_annealing(
 
     while temperatura > 1e-4 {
         println!("Temperatura atual: {}", temperatura);
+        contador += 1;
         while iter_t < maximo_interacoes {
             iter_t += 1;
-            contador += 1;
 
             let s_linha: Vec<bool> = bitflip_random(&s, 5e-2);
             let fo_s_linha = funcao_objetivo(&sat, &s_linha);
@@ -68,15 +68,14 @@ pub fn simulated_annealing(
                     s = s_linha.clone();
                 }
             }
-
-            historico.push(Output {
-                interacao: contador,
-                fo: funcao_objetivo(&sat, &s_asterisco),
-                temperatura,
-            });
         }
         temperatura *= alfa;
         iter_t = 0;
+        historico.push(Output {
+            interacao: contador,
+            fo: funcao_objetivo(&sat, &s_asterisco),
+            temperatura,
+        });
         println!("-------------------------------------");
     }
 
