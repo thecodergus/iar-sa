@@ -28,64 +28,64 @@ pub fn funcao_objetivo(sat: &Vec<Vec<i32>>, booleanos: &Vec<bool>) -> f64 {
 }
 
 pub fn simulated_annealing(
-    estado_incial: Vec<bool>,
+    estado_inicial: Vec<bool>,
     sat: Vec<Vec<i32>>,
     temperatura_inicial: f64,
     alfa: f64,
     maximo_interacoes: usize,
     fn_temperatura: &dyn Fn(f64, f64, f64, f64) -> f64,
 ) -> (Vec<bool>, Vec<Output>) {
-    let mut historico: Vec<Output> = vec![];
-    let mut estado: Vec<bool> = estado_incial.clone();
-    let mut energia: f64 = funcao_objetivo(&sat, &estado);
-    let mut temperatura: f64 = temperatura_inicial;
-    let mut melhor_estado: Vec<bool> = estado.clone();
+    let mut historico: Vec<Output> = Vec::new();
+    let mut estado = estado_inicial;
+    let mut energia = funcao_objetivo(&sat, &estado);
+    let mut temperatura = temperatura_inicial;
+    let mut melhor_estado = estado.clone();
+    let mut melhor_energia = energia;
     let mut rng = thread_rng();
 
     historico.push(Output {
         fo: energia,
         interacao: 0,
-        temperatura: temperatura.clone(),
+        temperatura,
         trues: somar_trues(&sat, &melhor_estado),
     });
 
     println!(
-        "Temperatura: {} | Energia: {} | Trues: {}",
+        "Iteração: {} | Temperatura: {:.4} | Energia: {:.4} | Trues: {}",
+        0,
         temperatura,
         energia,
         somar_trues(&sat, &melhor_estado)
     );
 
-    for _ in 0..maximo_interacoes {
-        let proximo_estado: Vec<bool> = bit_flip_with_probability(&estado, 5e-2);
-        let nova_energia: f64 = funcao_objetivo(&sat, &proximo_estado);
+    for interacao in 1..=maximo_interacoes {
+        let proximo_estado = bit_flip_with_probability(&estado, 0.05);
+        let nova_energia = funcao_objetivo(&sat, &proximo_estado);
+        let de = nova_energia - energia;
 
-        estado = {
-            let de: f64 = nova_energia - energia;
-
-            if de < 0.0 || rng.gen_range(0.0..=1.0) <= f64::consts::E.powf(-de / temperatura) {
-                energia = nova_energia;
-                proximo_estado
-            } else {
-                estado
-            }
-        };
-
-        if funcao_objetivo(&sat, &melhor_estado) < funcao_objetivo(&sat, &estado) {
-            melhor_estado = estado.clone();
+        if de < 0.0 || rng.gen::<f64>() <= (-de / temperatura).exp() {
+            estado = proximo_estado;
+            energia = nova_energia;
         }
 
+        if energia < melhor_energia {
+            melhor_estado = estado.clone();
+            melhor_energia = energia;
+        }
+
+        // temperatura = fn_temperatura(temperatura, de, alfa, interacao);
         temperatura *= alfa;
 
         historico.push(Output {
             fo: energia,
-            interacao: 0,
-            temperatura: temperatura.clone(),
+            interacao,
+            temperatura,
             trues: somar_trues(&sat, &melhor_estado),
         });
 
         println!(
-            "Temperatura: {} | Energia: {} | Trues: {}",
+            "Iteração: {} | Temperatura: {:.4} | Energia: {:.4} | Trues: {}",
+            interacao,
             temperatura,
             energia,
             somar_trues(&sat, &melhor_estado)
@@ -96,7 +96,7 @@ pub fn simulated_annealing(
         }
     }
 
-    return (melhor_estado, historico);
+    (melhor_estado, historico)
 }
 
 fn somar_trues(sat: &Vec<Vec<i32>>, booleanos: &Vec<bool>) -> usize {
