@@ -49,13 +49,19 @@ pub fn simulated_annealing(
         trues: somar_trues(&sat, &melhor_estado),
     });
 
+    println!(
+        "Temperatura: {} | Energia: {} | Trues: {}",
+        temperatura,
+        energia,
+        somar_trues(&sat, &melhor_estado)
+    );
+
     for _ in 0..maximo_interacoes {
         let proximo_estado: Vec<bool> = bit_flip_with_probability(&estado, 5e-2);
         let nova_energia: f64 = funcao_objetivo(&sat, &proximo_estado);
 
         estado = {
             let de: f64 = nova_energia - energia;
-            println!("Energia: {}", nova_energia);
 
             if de < 0.0 || rng.gen_range(0.0..=1.0) <= f64::consts::E.powf(-de / temperatura) {
                 energia = nova_energia;
@@ -77,6 +83,13 @@ pub fn simulated_annealing(
             temperatura: temperatura.clone(),
             trues: somar_trues(&sat, &melhor_estado),
         });
+
+        println!(
+            "Temperatura: {} | Energia: {} | Trues: {}",
+            temperatura,
+            energia,
+            somar_trues(&sat, &melhor_estado)
+        );
 
         if temperatura <= 1e-4 {
             break;
