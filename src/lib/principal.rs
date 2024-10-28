@@ -59,41 +59,39 @@ pub fn simulated_annealing(
         somar_trues(&sat, &melhor_estado)
     );
 
-    for interacao in 1..=maximo_interacoes {
-        let proximo_estado: Vec<bool> = bit_flip_with_probability(&estado, 0.05);
-        let nova_energia: f64 = funcao_objetivo(&sat, &proximo_estado);
-        let de: f64 = nova_energia - energia;
+    while temperatura >= 1e-4 {
+        for interacao in 1..=maximo_interacoes {
+            let proximo_estado: Vec<bool> = bit_flip_with_probability(&estado, 0.05);
+            let nova_energia: f64 = funcao_objetivo(&sat, &proximo_estado);
+            let de: f64 = nova_energia - energia;
 
-        if de < 0.0 || rng.gen::<f64>() <= (-de / temperatura).exp() {
-            estado = proximo_estado;
-            energia = nova_energia;
-        }
+            if de < 0.0 || rng.gen::<f64>() <= (-de / temperatura).exp() {
+                estado = proximo_estado;
+                energia = nova_energia;
+            }
 
-        if energia < melhor_energia {
-            melhor_estado = estado.clone();
-            melhor_energia = energia;
-        }
+            if energia < melhor_energia {
+                melhor_estado = estado.clone();
+                melhor_energia = energia;
+            }
 
-        // temperatura = fn_temperatura(temperatura, de, alfa, interacao);
-        temperatura *= alfa;
+            // temperatura = fn_temperatura(temperatura, de, alfa, interacao);
+            temperatura *= alfa;
 
-        historico.push(Output {
-            fo: energia,
-            interacao,
-            temperatura,
-            trues: somar_trues(&sat, &melhor_estado),
-        });
+            historico.push(Output {
+                fo: energia,
+                interacao,
+                temperatura,
+                trues: somar_trues(&sat, &melhor_estado),
+            });
 
-        println!(
-            "Iteração: {} | Temperatura: {:.4} | Energia: {:.4} | Trues: {}",
-            interacao,
-            temperatura,
-            energia,
-            somar_trues(&sat, &melhor_estado)
-        );
-
-        if temperatura <= 1e-4 {
-            break;
+            println!(
+                "Iteração: {} | Temperatura: {:.4} | Energia: {:.4} | Trues: {}",
+                interacao,
+                temperatura,
+                energia,
+                somar_trues(&sat, &melhor_estado)
+            );
         }
     }
 
