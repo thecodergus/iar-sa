@@ -1,5 +1,6 @@
 use rand::{thread_rng, Rng};
 
+use super::cooling_schedule;
 use super::vetores::{bit_flip_with_probability, change_for_boolean};
 
 #[derive(Debug, Clone)]
@@ -73,7 +74,8 @@ pub fn simulated_annealing(
                 }
             }
         }
-        temperatura *= alfa;
+        temperatura = cooling_schedule::um(iter_t as f64, 10.0, 0.001, 5000.0);
+        iter_t = 0;
         historico.push(Output {
             interacao: contador,
             fo: funcao_objetivo(&sat, &s_asterisco),
@@ -85,7 +87,6 @@ pub fn simulated_annealing(
                 .len(),
         });
         println!("-------------------------------------");
-        iter_t = 0;
     }
 
     println!("Simulated Annealing concluído.");
