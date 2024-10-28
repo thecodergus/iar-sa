@@ -54,8 +54,8 @@ pub fn simulated_annealing(
             iter_t += 1;
 
             let s_linha: Vec<bool> = bit_flip_with_probability(&s, 5e-2);
-            let fo_s_linha = funcao_objetivo(&sat, &s_linha);
-            let fo_s = funcao_objetivo(&sat, &s);
+            let fo_s_linha: f64 = funcao_objetivo(&sat, &s_linha);
+            let fo_s: f64 = funcao_objetivo(&sat, &s);
             let delta: f64 = fo_s_linha - fo_s;
 
             if delta < 0.0 {
