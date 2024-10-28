@@ -43,11 +43,10 @@ pub fn simulated_annealing(
     let mut melhor_estado: Vec<bool> = estado.clone();
     let mut melhor_energia: f64 = energia;
     let mut rng: rand::prelude::ThreadRng = thread_rng();
-    let mut contador: usize = 0;
 
     historico.push(Output {
         fo: energia,
-        interacao: contador,
+        interacao: 0,
         temperatura,
         trues: somar_trues(&sat, &melhor_estado),
     });
@@ -62,8 +61,6 @@ pub fn simulated_annealing(
 
     while temperatura >= 1e-4 {
         for interacao in 1..=maximo_interacoes {
-            contador += 1;
-
             let proximo_estado: Vec<bool> = bit_flip_with_probability(&estado, 0.05);
             let nova_energia: f64 = funcao_objetivo(&sat, &proximo_estado);
             let de: f64 = nova_energia - energia;
@@ -77,24 +74,25 @@ pub fn simulated_annealing(
                 melhor_estado = estado.clone();
                 melhor_energia = energia;
             }
+
+            // temperatura = fn_temperatura(temperatura, de, alfa, interacao);
+            temperatura *= alfa;
+
+            historico.push(Output {
+                fo: energia,
+                interacao,
+                temperatura,
+                trues: somar_trues(&sat, &melhor_estado),
+            });
+
+            println!(
+                "Iteração: {} | Temperatura: {:.4} | Energia: {:.4} | Trues: {}",
+                interacao,
+                temperatura,
+                energia,
+                somar_trues(&sat, &melhor_estado)
+            );
         }
-        // temperatura = fn_temperatura(temperatura, de, alfa, interacao);
-        temperatura *= alfa;
-
-        historico.push(Output {
-            fo: energia,
-            interacao: contador,
-            temperatura,
-            trues: somar_trues(&sat, &melhor_estado),
-        });
-
-        println!(
-            "Iteração: {} | Temperatura: {:.4} | Energia: {:.4} | Trues: {}",
-            contador,
-            temperatura,
-            energia,
-            somar_trues(&sat, &melhor_estado)
-        );
     }
 
     (melhor_estado, historico)
