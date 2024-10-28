@@ -85,11 +85,7 @@ pub fn simulated_annealing(
                 .len(),
         });
         println!("-------------------------------------");
-        if iter_t >= maximo_interacoes {
-            break;
-        } else {
-            iter_t = 0;
-        }
+        iter_t = 0;
     }
 
     println!("Simulated Annealing concluído.");
