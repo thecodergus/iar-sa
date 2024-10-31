@@ -14,7 +14,7 @@ fn main() -> io::Result<()> {
 
     let solucao_aleatoria: Vec<bool> = lib::vetores::random_bool_vector(250);
 
-    let temperatura: f64 = 1.0;
+    let temperatura: f64 = 1000.0;
     let alfa: f64 = 0.95;
     let maximo_interacoes: usize = 5_000_000;
     let sa_max: usize = 100_000;
