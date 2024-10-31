@@ -42,7 +42,7 @@ fn main() -> io::Result<()> {
     if let Err(e) = gerar_grafico_temperatura(historico, "temperatura.png") {
         println!("Erro ao gerar o gráfico: {}", e);
     } else {
-        println!("Gráfico de convergência gerado com sucesso.");
+        println!("Gráfico de temperatura gerado com sucesso.");
     }
 
     Ok(())
