@@ -90,3 +90,65 @@ pub fn gerar_grafico_convergencia(
 
     Ok(())
 }
+
+pub fn gerar_grafico_temperatura(
+    dados: Vec<Output>,
+    caminho_arquivo: &str,
+) -> Result<(), Box<dyn std::error::Error>> {
+    // Determinar o tamanho da imagem
+    let largura = 800;
+    let altura = 600;
+
+    // Criar o backend do gráfico
+    let root = BitMapBackend::new(caminho_arquivo, (largura, altura)).into_drawing_area();
+    root.fill(&WHITE)?;
+
+    // Definir as margens do gráfico
+    let root = root.margin(50, 50, 50, 50);
+
+    // Encontrar os valores máximos e mínimos para os eixos
+    let max_iteracao = dados.iter().map(|d| d.interacao).max().unwrap_or(0);
+    let min_temperatura = dados
+        .iter()
+        .map(|d| d.temperatura)
+        .fold(f64::INFINITY, f64::min);
+    let max_temperatura = dados
+        .iter()
+        .map(|d| d.temperatura)
+        .fold(f64::NEG_INFINITY, f64::max);
+
+    // Configurar o gráfico
+    let mut chart = ChartBuilder::on(&root)
+        .caption(
+            "Evolução da Temperatura ao Longo das Interações",
+            ("sans-serif", 30),
+        )
+        .x_label_area_size(40)
+        .y_label_area_size(50)
+        .build_cartesian_2d(0usize..max_iteracao, min_temperatura..max_temperatura)?;
+
+    // Desenhar malhas de fundo
+    chart
+        .configure_mesh()
+        .x_desc("Interações")
+        .y_desc("Temperatura")
+        .draw()?;
+
+    // Preparar os dados para o gráfico
+    let pontos: Vec<(usize, f64)> = dados.iter().map(|d| (d.interacao, d.temperatura)).collect();
+
+    // Desenhar a linha de temperatura
+    chart
+        .draw_series(LineSeries::new(pontos, &BLUE))?
+        .label("Temperatura")
+        .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], &BLUE));
+
+    // Desenhar a legenda
+    chart
+        .configure_series_labels()
+        .background_style(&WHITE.mix(0.8))
+        .border_style(&BLACK)
+        .draw()?;
+
+    Ok(())
+}

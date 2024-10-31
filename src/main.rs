@@ -2,7 +2,7 @@ use std::fs::File;
 use std::io::{self, BufRead};
 use std::path::Path;
 
-use lib::arquivo::gerar_grafico_convergencia;
+use lib::arquivo::{gerar_grafico_convergencia, gerar_grafico_temperatura};
 use lib::cooling_schedule::{dois, um};
 use lib::principal::simulated_annealing;
 
@@ -33,7 +33,13 @@ fn main() -> io::Result<()> {
     // println!("{:?}", melhor);
 
     // Gerar o gráfico de convergência
-    if let Err(e) = gerar_grafico_convergencia(historico, "convergencia.png") {
+    if let Err(e) = gerar_grafico_convergencia(historico.clone(), "convergencia.png") {
+        println!("Erro ao gerar o gráfico: {}", e);
+    } else {
+        println!("Gráfico de convergência gerado com sucesso.");
+    }
+
+    if let Err(e) = gerar_grafico_temperatura(historico, "temperatura.png") {
         println!("Erro ao gerar o gráfico: {}", e);
     } else {
         println!("Gráfico de convergência gerado com sucesso.");
