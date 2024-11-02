@@ -132,14 +132,21 @@ pub fn random_search(
         trues: somar_trues(&sat, &s_out),
     });
 
-    for _ in 0..numero_execucoes {
+    for iter in 1..=numero_execucoes {
         let s: Vec<bool> = random_bool_vector(s_out.len());
         let s_fo: f64 = funcao_objetivo(&sat, &s);
 
-        if s_fo > s_out_fo {
+        if s_fo < s_out_fo {
             s_out = s;
             s_out_fo = s_fo;
         }
+
+        historia.push(Output {
+            fo: s_out_fo.clone(),
+            interacao: iter,
+            temperatura: 0.0,
+            trues: somar_trues(&sat, &s_out),
+        });
     }
 
     return (s_out, historia);

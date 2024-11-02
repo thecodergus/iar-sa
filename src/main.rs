@@ -94,21 +94,21 @@ fn main() -> Result<(), Box<dyn Error>> {
             let (_, historico) = random_search(clauses, solucao_aleatoria, 12900000);
 
             // Gerar os gráficos de convergência e temperatura para cada execução
-            // let convergencia_path = format!("imgs/{} - convergencia_{}.png", tamanho_vetor, i + 1);
+            let convergencia_path = format!("imgs/{} - convergencia_{}.png", tamanho_vetor, i + 1);
             // let temperatura_path = format!("imgs/{} - temperatura_{}.png", tamanho_vetor, i + 1);
 
-            // if let Err(e) = gerar_grafico_convergencia(historico.clone(), &convergencia_path) {
-            //     eprintln!(
-            //         "Erro ao gerar o gráfico de convergência para execução {}: {}",
-            //         i + 1,
-            //         e
-            //     );
-            // } else {
-            //     println!(
-            //         "Gráfico de convergência gerado com sucesso para execução {}.",
-            //         i + 1
-            //     );
-            // }
+            if let Err(e) = gerar_grafico_convergencia(historico.clone(), &convergencia_path) {
+                eprintln!(
+                    "Erro ao gerar o gráfico de convergência para execução {}: {}",
+                    i + 1,
+                    e
+                );
+            } else {
+                println!(
+                    "Gráfico de convergência gerado com sucesso para execução {}.",
+                    i + 1
+                );
+            }
 
             // if let Err(e) = gerar_grafico_temperatura(historico.clone(), &temperatura_path) {
             //     eprintln!(
