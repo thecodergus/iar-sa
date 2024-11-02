@@ -92,8 +92,8 @@ fn main() -> Result<(), Box<dyn Error>> {
             );
 
             // Gerar os gráficos de convergência e temperatura para cada execução
-            let convergencia_path = format!("{} - convergencia_{}.png", tamanho_vetor, i + 1);
-            let temperatura_path = format!("{} - temperatura_{}.png", tamanho_vetor, i + 1);
+            let convergencia_path = format!("imgs/{} - convergencia_{}.png", tamanho_vetor, i + 1);
+            let temperatura_path = format!("imgs/{} - temperatura_{}.png", tamanho_vetor, i + 1);
 
             if let Err(e) = gerar_grafico_convergencia(historico.clone(), &convergencia_path) {
                 eprintln!(
