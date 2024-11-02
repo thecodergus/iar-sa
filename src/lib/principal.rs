@@ -29,80 +29,62 @@ pub fn funcao_objetivo(sat: &Vec<Vec<i32>>, booleanos: &Vec<bool>) -> f64 {
 }
 
 pub fn simulated_annealing(
-    estado_inicial: Vec<bool>,
-    sat: Vec<Vec<i32>>,
-    temperatura_inicial: f64,
+    f: &dyn Fn(f64, f64, f64, f64) -> f64,
     alfa: f64,
-    maximo_interacoes: usize,
     sa_max: usize,
-    fn_temperatura: &dyn Fn(f64, f64, f64, f64) -> f64,
+    max_interacoes: usize,
+    t0: f64,
+    mut s: Vec<bool>,
+    sat: Vec<Vec<i32>>,
 ) -> (Vec<bool>, Vec<Output>) {
-    let mut historico: Vec<Output> = Vec::new();
-    let mut estado: Vec<bool> = estado_inicial;
-    let mut energia: f64 = funcao_objetivo(&sat, &estado);
-    let mut temperatura: f64 = temperatura_inicial;
-    let mut melhor_estado: Vec<bool> = estado.clone();
-    let mut melhor_energia: f64 = energia;
-    let mut rng: rand::prelude::ThreadRng = thread_rng();
+    let mut s_asterisco: Vec<bool> = s.clone();
+    let mut iter_t: usize = 0;
+    let mut t: f64 = t0;
+    let mut historico: Vec<Output> = vec![];
     let mut contador: usize = 0;
 
     historico.push(Output {
-        fo: energia,
-        interacao: 0,
-        temperatura,
-        trues: somar_trues(&sat, &melhor_estado),
+        fo: funcao_objetivo(&sat, &s_asterisco),
+        interacao: contador,
+        temperatura: t,
+        trues: somar_trues(&sat, &s_asterisco),
     });
 
-    println!(
-        "Iteração: {} | Temperatura: {:.4} | Energia: {:.4} | Trues: {}",
-        0,
-        temperatura,
-        energia,
-        somar_trues(&sat, &melhor_estado)
-    );
-
-    while temperatura >= 1e-4 && contador < maximo_interacoes {
-        for _ in 1..=sa_max {
+    while t > 1e-4 {
+        while iter_t < sa_max {
+            iter_t += 1;
             contador += 1;
-            let proximo_estado: Vec<bool> = bit_flip_with_probability(&estado, 0.05);
-            let nova_energia: f64 = funcao_objetivo(&sat, &proximo_estado);
-            let de: f64 = nova_energia - energia;
+            let s_linha: Vec<bool> = bit_flip_with_probability(&s, 0.05);
+            let fo_s_linha: f64 = funcao_objetivo(&sat, &s_linha);
+            let fo_s: f64 = funcao_objetivo(&sat, &s);
+            let delta: f64 = fo_s_linha - fo_s;
 
-            if de < 0.0 || rng.gen::<f64>() <= (-de / temperatura).exp() {
-                estado = proximo_estado;
-                energia = nova_energia;
-            }
+            if delta < 0.0 {
+                s = s_linha.clone();
+                let fo_s_asterisco: f64 = funcao_objetivo(&sat, &s_asterisco);
 
-            if energia < melhor_energia {
-                melhor_estado = estado.clone();
-                melhor_energia = energia;
+                if fo_s_linha < fo_s_asterisco {
+                    s_asterisco = s_linha;
+                }
+            } else {
+                let x: f64 = rand::thread_rng().gen::<f64>();
+                if x < (-delta / t).exp() {
+                    s = s_linha;
+                }
             }
         }
-
-        temperatura = fn_temperatura(
-            contador as f64,
-            temperatura_inicial,
-            0.0,
-            maximo_interacoes as f64,
-        );
+        t = f(contador as f64, t0, t, max_interacoes as f64);
+        iter_t = 0;
 
         historico.push(Output {
-            fo: energia,
+            fo: funcao_objetivo(&sat, &s_asterisco),
             interacao: contador,
-            temperatura,
-            trues: somar_trues(&sat, &melhor_estado),
+            temperatura: t,
+            trues: somar_trues(&sat, &s_asterisco),
         });
-
-        println!(
-            "Iteração: {} | Temperatura: {:.4} | Energia: {:.4} | Trues: {}",
-            contador,
-            temperatura,
-            energia,
-            somar_trues(&sat, &melhor_estado)
-        );
     }
 
-    (melhor_estado, historico)
+    return (s_asterisco, historico);
 }
 
 fn somar_trues(sat: &Vec<Vec<i32>>, booleanos: &Vec<bool>) -> usize {
