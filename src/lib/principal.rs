@@ -51,7 +51,7 @@ pub fn simulated_annealing(
     });
 
     println!(
-        "Interação: {} | Temperatura: {} | Energia: {} | Numero de Trues: {}",
+        "Interação: {} | Temperatura: {:.5} | Energia: {:.5} | Numero de Trues: {}",
         contador,
         t,
         funcao_objetivo(&sat, &s_asterisco),
@@ -92,7 +92,7 @@ pub fn simulated_annealing(
         });
 
         println!(
-            "Interação: {} | Temperatura: {} | Energia: {} | Numero de Trues: {}",
+            "Interação: {} | Temperatura: {:.5} | Energia: {:.5} | Numero de Trues: {}",
             contador,
             t,
             funcao_objetivo(&sat, &s_asterisco),
