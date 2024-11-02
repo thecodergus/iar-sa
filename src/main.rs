@@ -20,13 +20,13 @@ fn main() -> io::Result<()> {
     let sa_max: usize = 100_000;
 
     let (melhor, historico) = simulated_annealing(
+        &dois,
+        alfa,
+        sa_max,
+        maximo_interacoes,
+        temperatura,
         solucao_aleatoria,
         clauses,
-        temperatura,
-        alfa,
-        maximo_interacoes,
-        sa_max,
-        &dois,
     );
 
     // println!("{:?}", historico);
