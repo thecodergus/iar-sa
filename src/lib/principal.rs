@@ -50,6 +50,14 @@ pub fn simulated_annealing(
         trues: somar_trues(&sat, &s_asterisco),
     });
 
+    println!(
+        "Interação: {} | Temperatura: {} | Energia: {} | Numero de Trues: {}",
+        contador,
+        t,
+        funcao_objetivo(&sat, &s_asterisco),
+        somar_trues(&sat, &s_asterisco)
+    );
+
     while t > 1e-4 {
         while iter_t < sa_max {
             iter_t += 1;
@@ -82,6 +90,14 @@ pub fn simulated_annealing(
             temperatura: t,
             trues: somar_trues(&sat, &s_asterisco),
         });
+
+        println!(
+            "Interação: {} | Temperatura: {} | Energia: {} | Numero de Trues: {}",
+            contador,
+            t,
+            funcao_objetivo(&sat, &s_asterisco),
+            somar_trues(&sat, &s_asterisco)
+        );
     }
 
     return (s_asterisco, historico);
