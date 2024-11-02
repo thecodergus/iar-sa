@@ -2,7 +2,9 @@ use rand::{thread_rng, Rng};
 
 use super::cooling_schedule;
 
-use super::vetores::{bit_flip_with_probability, change_for_boolean};
+use super::vetores::{
+    bit_flip_with_probability, change_for_boolean, generate_random_vector, random_bool_vector,
+};
 use core::f64;
 
 #[derive(Debug, Clone)]
@@ -112,4 +114,33 @@ fn somar_trues(sat: &Vec<Vec<i32>>, booleanos: &Vec<bool>) -> usize {
         .filter(|v| **v)
         .collect::<Vec<&bool>>()
         .len();
+}
+
+pub fn random_search(
+    sat: Vec<Vec<i32>>,
+    solucao_inicial: Vec<bool>,
+    numero_execucoes: usize,
+) -> (Vec<bool>, Vec<Output>) {
+    let mut s_out: Vec<bool> = solucao_inicial;
+    let mut s_out_fo: f64 = funcao_objetivo(&sat, &s_out);
+    let mut historia: Vec<Output> = vec![];
+
+    historia.push(Output {
+        fo: s_out_fo.clone(),
+        interacao: 0,
+        temperatura: 0.0,
+        trues: somar_trues(&sat, &s_out),
+    });
+
+    for _ in 0..numero_execucoes {
+        let s: Vec<bool> = random_bool_vector(s_out.len());
+        let s_fo: f64 = funcao_objetivo(&sat, &s);
+
+        if s_fo > s_out_fo {
+            s_out = s;
+            s_out_fo = s_fo;
+        }
+    }
+
+    return (s_out, historia);
 }

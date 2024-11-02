@@ -4,7 +4,7 @@ use std::path::Path;
 
 use lib::arquivo::{gerar_grafico_convergencia, gerar_grafico_temperatura};
 use lib::cooling_schedule::{dois, um};
-use lib::principal::{simulated_annealing, Output};
+use lib::principal::{random_search, simulated_annealing, Output};
 
 mod lib;
 
@@ -81,45 +81,47 @@ fn main() -> Result<(), Box<dyn Error>> {
             let solucao_aleatoria: Vec<bool> = lib::vetores::random_bool_vector(tamanho_vetor);
 
             // Executa o simulated annealing
-            let (melhor, historico) = simulated_annealing(
-                &dois,
-                *alfa,
-                *sa_max,
-                *maximo_interacoes,
-                *temperatura,
-                solucao_aleatoria,
-                clauses,
-            );
+            // let (melhor, historico) = simulated_annealing(
+            //     &dois,
+            //     *alfa,
+            //     *sa_max,
+            //     *maximo_interacoes,
+            //     *temperatura,
+            //     solucao_aleatoria,
+            //     clauses,
+            // );
+
+            let (_, historico) = random_search(clauses, solucao_aleatoria, 12900000);
 
             // Gerar os gráficos de convergência e temperatura para cada execução
-            let convergencia_path = format!("imgs/{} - convergencia_{}.png", tamanho_vetor, i + 1);
-            let temperatura_path = format!("imgs/{} - temperatura_{}.png", tamanho_vetor, i + 1);
+            // let convergencia_path = format!("imgs/{} - convergencia_{}.png", tamanho_vetor, i + 1);
+            // let temperatura_path = format!("imgs/{} - temperatura_{}.png", tamanho_vetor, i + 1);
 
-            if let Err(e) = gerar_grafico_convergencia(historico.clone(), &convergencia_path) {
-                eprintln!(
-                    "Erro ao gerar o gráfico de convergência para execução {}: {}",
-                    i + 1,
-                    e
-                );
-            } else {
-                println!(
-                    "Gráfico de convergência gerado com sucesso para execução {}.",
-                    i + 1
-                );
-            }
+            // if let Err(e) = gerar_grafico_convergencia(historico.clone(), &convergencia_path) {
+            //     eprintln!(
+            //         "Erro ao gerar o gráfico de convergência para execução {}: {}",
+            //         i + 1,
+            //         e
+            //     );
+            // } else {
+            //     println!(
+            //         "Gráfico de convergência gerado com sucesso para execução {}.",
+            //         i + 1
+            //     );
+            // }
 
-            if let Err(e) = gerar_grafico_temperatura(historico.clone(), &temperatura_path) {
-                eprintln!(
-                    "Erro ao gerar o gráfico de temperatura para execução {}: {}",
-                    i + 1,
-                    e
-                );
-            } else {
-                println!(
-                    "Gráfico de temperatura gerado com sucesso para execução {}.",
-                    i + 1
-                );
-            }
+            // if let Err(e) = gerar_grafico_temperatura(historico.clone(), &temperatura_path) {
+            //     eprintln!(
+            //         "Erro ao gerar o gráfico de temperatura para execução {}: {}",
+            //         i + 1,
+            //         e
+            //     );
+            // } else {
+            //     println!(
+            //         "Gráfico de temperatura gerado com sucesso para execução {}.",
+            //         i + 1
+            //     );
+            // }
 
             // Captura o último item do `historico` e adiciona o tamanho do vetor
             let ultimo_output = historico.last().cloned();
@@ -134,7 +136,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         });
 
     // Escreve os resultados finais no arquivo CSV
-    salvar_resultados_csv("resultados.csv", &resultados_finais)?;
+    salvar_resultados_csv("resultados_ra.csv", &resultados_finais)?;
 
     println!("Resultados finais salvos em 'resultados.csv'.");
 
