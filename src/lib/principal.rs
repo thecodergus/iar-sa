@@ -81,7 +81,7 @@ pub fn simulated_annealing(
                 }
             }
         }
-        t = f(contador as f64, t0, t, max_interacoes as f64);
+        t = f(contador as f64, t0, 0.0, max_interacoes as f64);
         iter_t = 0;
 
         historico.push(Output {
